@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -59,11 +58,10 @@ const Download = () => {
   };
 
   const handleDownload = () => {
-    if (photoData?.imageUrl) {
+    if (photoData?.imageData && photoData?.fileName) {
       const link = document.createElement('a');
-      link.href = photoData.imageUrl;
-      link.download = 'shared-photo.jpg';
-      link.target = '_blank';
+      link.href = photoData.imageData;
+      link.download = photoData.fileName || 'shared-photo.jpg';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -162,11 +160,11 @@ const Download = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {photoData?.imageUrl && (
+                {photoData?.imageData && (
                   <div className="space-y-4">
                     <div className="aspect-video w-full overflow-hidden rounded-lg border">
                       <img 
-                        src={photoData.imageUrl} 
+                        src={photoData.imageData} 
                         alt="Shared photo" 
                         className="w-full h-full object-cover"
                         onError={(e) => {

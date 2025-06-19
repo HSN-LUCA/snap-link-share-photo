@@ -8,7 +8,7 @@ import { Upload, Link, Shield, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
-  const [imageUrl, setImageUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [shareLink, setShareLink] = useState("");
@@ -19,11 +19,27 @@ const Index = () => {
     return `${window.location.origin}/download/${uniqueId}`;
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
+
   const handleUpload = async () => {
-    if (!imageUrl || !phoneNumber) {
+    if (!selectedFile || !phoneNumber) {
       toast({
         title: "Missing Information",
-        description: "Please provide both image URL and phone number",
+        description: "Please select a photo and provide phone number",
         variant: "destructive",
       });
       return;
@@ -31,25 +47,33 @@ const Index = () => {
 
     setIsUploading(true);
     
-    // Simulate upload process
-    setTimeout(() => {
-      const link = generateShareLink();
-      setShareLink(link);
+    // Convert file to base64 for storage
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Data = reader.result as string;
       
-      // Store the photo data in localStorage (in a real app, this would be a backend)
-      const photoData = {
-        imageUrl,
-        phoneNumber,
-        timestamp: Date.now(),
-      };
-      localStorage.setItem(link.split('/').pop() || '', JSON.stringify(photoData));
-      
-      setIsUploading(false);
-      toast({
-        title: "Photo Uploaded Successfully!",
-        description: "Share link has been generated",
-      });
-    }, 2000);
+      setTimeout(() => {
+        const link = generateShareLink();
+        setShareLink(link);
+        
+        // Store the photo data in localStorage
+        const photoData = {
+          imageData: base64Data,
+          fileName: selectedFile.name,
+          phoneNumber,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem(link.split('/').pop() || '', JSON.stringify(photoData));
+        
+        setIsUploading(false);
+        toast({
+          title: "Photo Uploaded Successfully!",
+          description: "Share link has been generated",
+        });
+      }, 2000);
+    };
+    
+    reader.readAsDataURL(selectedFile);
   };
 
   const copyToClipboard = () => {
@@ -86,16 +110,23 @@ const Index = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="imageUrl" className="text-sm font-medium">
-                    Image URL
+                  <Label htmlFor="photo" className="text-sm font-medium">
+                    Select Photo
                   </Label>
-                  <Input
-                    id="imageUrl"
-                    placeholder="https://example.com/your-photo.jpg"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="h-12"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="photo"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="h-12 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                  </div>
+                  {selectedFile && (
+                    <p className="text-sm text-green-600 mt-2">
+                      Selected: {selectedFile.name}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -158,7 +189,7 @@ const Index = () => {
                     variant="outline" 
                     onClick={() => {
                       setShareLink("");
-                      setImageUrl("");
+                      setSelectedFile(null);
                       setPhoneNumber("");
                     }}
                     className="flex-1"
