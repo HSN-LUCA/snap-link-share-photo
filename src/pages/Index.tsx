@@ -4,20 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Upload, Link, Shield, Download } from "lucide-react";
+import { Upload, Shield, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [shareLink, setShareLink] = useState("");
+  const [isUploaded, setIsUploaded] = useState(false);
   const { toast } = useToast();
-
-  const generateShareLink = () => {
-    const uniqueId = Math.random().toString(36).substring(2, 15);
-    return `${window.location.origin}/download/${uniqueId}`;
-  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -53,22 +48,20 @@ const Index = () => {
       const base64Data = reader.result as string;
       
       setTimeout(() => {
-        const link = generateShareLink();
-        setShareLink(link);
-        
-        // Store the photo data in localStorage
+        // Store the photo data in localStorage using phone number as key
         const photoData = {
           imageData: base64Data,
           fileName: selectedFile.name,
           phoneNumber,
           timestamp: Date.now(),
         };
-        localStorage.setItem(link.split('/').pop() || '', JSON.stringify(photoData));
+        localStorage.setItem(phoneNumber, JSON.stringify(photoData));
         
         setIsUploading(false);
+        setIsUploaded(true);
         toast({
           title: "Photo Uploaded Successfully!",
-          description: "Share link has been generated",
+          description: "Your photo has been saved and can be downloaded using your phone number",
         });
       }, 2000);
     };
@@ -76,12 +69,10 @@ const Index = () => {
     reader.readAsDataURL(selectedFile);
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(shareLink);
-    toast({
-      title: "Link Copied!",
-      description: "Share link has been copied to clipboard",
-    });
+  const handleUploadAnother = () => {
+    setIsUploaded(false);
+    setSelectedFile(null);
+    setPhoneNumber("");
   };
 
   return (
@@ -92,12 +83,12 @@ const Index = () => {
             CloudShare
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Securely share photos with phone number verification. Upload once, share safely.
+            Upload your photo securely with phone number verification
           </p>
         </div>
 
         <div className="max-w-2xl mx-auto">
-          {!shareLink ? (
+          {!isUploaded ? (
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
@@ -105,7 +96,7 @@ const Index = () => {
                 </div>
                 <CardTitle className="text-2xl">Upload Your Photo</CardTitle>
                 <CardDescription className="text-base">
-                  Share photos securely with phone number verification
+                  Upload your photo and associate it with your phone number
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -131,7 +122,7 @@ const Index = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber" className="text-sm font-medium">
-                    Receiver's Phone Number
+                    Your Phone Number
                   </Label>
                   <Input
                     id="phoneNumber"
@@ -155,7 +146,7 @@ const Index = () => {
                   ) : (
                     <div className="flex items-center space-x-2">
                       <Upload className="w-4 h-4" />
-                      <span>Generate Share Link</span>
+                      <span>Upload Photo</span>
                     </div>
                   )}
                 </Button>
@@ -165,38 +156,31 @@ const Index = () => {
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
-                  <Link className="w-8 h-8 text-white" />
+                  <Upload className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-2xl text-green-600">Photo Uploaded Successfully!</CardTitle>
                 <CardDescription className="text-base">
-                  Share this secure link with the receiver
+                  Your photo has been saved and can be downloaded using your phone number
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                  <p className="text-sm text-gray-600 mb-2">Secure Share Link:</p>
-                  <p className="font-mono text-sm bg-white p-3 rounded border break-all">
-                    {shareLink}
+                  <p className="text-sm text-gray-600 mb-2">Your phone number:</p>
+                  <p className="font-mono text-sm bg-white p-3 rounded border">
+                    {phoneNumber}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Use this phone number to find and download your photo
                   </p>
                 </div>
                 
-                <div className="flex space-x-3">
-                  <Button onClick={copyToClipboard} className="flex-1">
-                    <Link className="w-4 h-4 mr-2" />
-                    Copy Link
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      setShareLink("");
-                      setSelectedFile(null);
-                      setPhoneNumber("");
-                    }}
-                    className="flex-1"
-                  >
-                    Upload Another
-                  </Button>
-                </div>
+                <Button 
+                  onClick={handleUploadAnother}
+                  className="w-full"
+                  variant="outline"
+                >
+                  Upload Another Photo
+                </Button>
               </CardContent>
             </Card>
           )}
@@ -207,23 +191,23 @@ const Index = () => {
                 <Upload className="w-6 h-6 text-blue-600" />
               </div>
               <h3 className="font-semibold mb-2">Easy Upload</h3>
-              <p className="text-sm text-gray-600">Simply paste your image URL and enter the receiver's phone number</p>
+              <p className="text-sm text-gray-600">Simply select your photo and enter your phone number</p>
             </div>
             
             <div className="text-center">
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Shield className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="font-semibold mb-2">Secure Sharing</h3>
-              <p className="text-sm text-gray-600">Phone number verification ensures only intended recipients can access</p>
+              <h3 className="font-semibold mb-2">Secure Storage</h3>
+              <p className="text-sm text-gray-600">Your photos are linked to your phone number for security</p>
             </div>
             
             <div className="text-center">
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Download className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="font-semibold mb-2">Simple Download</h3>
-              <p className="text-sm text-gray-600">Recipients just need to enter their phone number to download</p>
+              <h3 className="font-semibold mb-2">Find & Download</h3>
+              <p className="text-sm text-gray-600">Enter your phone number to find and download your photos</p>
             </div>
           </div>
         </div>
