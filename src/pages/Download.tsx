@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Download as DownloadIcon, Search, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { findPhotoByPhoneNumber, getPhotoUrl, PhotoData } from "@/lib/photoStorage";
 
 const Download = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [photoData, setPhotoData] = useState<any>(null);
+  const [photoData, setPhotoData] = useState<PhotoData | null>(null);
   const [photoFound, setPhotoFound] = useState<boolean | null>(null);
   const { toast } = useToast();
 
@@ -26,11 +27,11 @@ const Download = () => {
 
     setIsSearching(true);
     
-    // Simulate search
-    setTimeout(() => {
-      const data = localStorage.getItem(phoneNumber);
+    try {
+      const data = await findPhotoByPhoneNumber(phoneNumber);
+      
       if (data) {
-        setPhotoData(JSON.parse(data));
+        setPhotoData(data);
         setPhotoFound(true);
         toast({
           title: "Photo Found!",
@@ -44,15 +45,24 @@ const Download = () => {
           variant: "destructive",
         });
       }
+    } catch (error) {
+      setPhotoFound(false);
+      toast({
+        title: "Search Failed",
+        description: error instanceof Error ? error.message : "Failed to search for photo",
+        variant: "destructive",
+      });
+    } finally {
       setIsSearching(false);
-    }, 1500);
+    }
   };
 
   const handleDownload = () => {
-    if (photoData?.imageData && photoData?.fileName) {
+    if (photoData?.filePath && photoData?.fileName) {
+      const photoUrl = getPhotoUrl(photoData.filePath);
       const link = document.createElement('a');
-      link.href = photoData.imageData;
-      link.download = photoData.fileName || 'photo.jpg';
+      link.href = photoUrl;
+      link.download = photoData.fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -150,11 +160,11 @@ const Download = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {photoData?.imageData && (
+                {photoData?.filePath && (
                   <div className="space-y-4">
                     <div className="aspect-video w-full overflow-hidden rounded-lg border">
                       <img 
-                        src={photoData.imageData} 
+                        src={getPhotoUrl(photoData.filePath)} 
                         alt="Your photo" 
                         className="w-full h-full object-cover"
                         onError={(e) => {

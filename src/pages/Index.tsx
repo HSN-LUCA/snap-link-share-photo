@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Upload, Shield, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { uploadPhoto } from "@/lib/photoStorage";
 
 const Index = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -42,31 +42,23 @@ const Index = () => {
 
     setIsUploading(true);
     
-    // Convert file to base64 for storage
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Data = reader.result as string;
+    try {
+      await uploadPhoto(selectedFile, phoneNumber);
       
-      setTimeout(() => {
-        // Store the photo data in localStorage using phone number as key
-        const photoData = {
-          imageData: base64Data,
-          fileName: selectedFile.name,
-          phoneNumber,
-          timestamp: Date.now(),
-        };
-        localStorage.setItem(phoneNumber, JSON.stringify(photoData));
-        
-        setIsUploading(false);
-        setIsUploaded(true);
-        toast({
-          title: "Photo Uploaded Successfully!",
-          description: "Your photo has been saved and can be downloaded using your phone number",
-        });
-      }, 2000);
-    };
-    
-    reader.readAsDataURL(selectedFile);
+      setIsUploading(false);
+      setIsUploaded(true);
+      toast({
+        title: "Photo Uploaded Successfully!",
+        description: "Your photo has been saved and can be downloaded using your phone number",
+      });
+    } catch (error) {
+      setIsUploading(false);
+      toast({
+        title: "Upload Failed",
+        description: error instanceof Error ? error.message : "Failed to upload photo",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleUploadAnother = () => {
