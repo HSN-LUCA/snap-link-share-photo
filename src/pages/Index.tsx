@@ -128,7 +128,8 @@ const Index = () => {
                 <Button 
                   onClick={handleUpload} 
                   disabled={isUploading}
-                  className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium"
+                  className="w-full h-12 text-white font-medium"
+                  style={{ backgroundColor: '#92722A' }}
                 >
                   {isUploading ? (
                     <div className="flex items-center space-x-2">
