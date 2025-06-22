@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Upload, Shield, Download, Settings, Camera, Image, FileImage } from "lucide-react";
+import { Upload, Shield, Download, Settings, Camera, Image, FileImage, CloudUpload, FolderOpen, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadPhoto } from "@/lib/photoStorage";
 import { validateImageFile, detectFaces, loadImageFromFile } from "@/lib/faceDetection";
@@ -31,7 +31,7 @@ const Index = () => {
     pageTitle: "CloudShare",
     logoUrl: "",
     headerText: "Upload your photo securely with phone number verification",
-    uploadIcon: "Upload",
+    uploadIcon: "CloudUpload",
     iconColor: "#ffffff"
   });
   const { toast } = useToast();
@@ -44,6 +44,7 @@ const Index = () => {
       // Add default iconColor if it doesn't exist in saved settings
       setAdminSettings({
         iconColor: "#ffffff",
+        uploadIcon: "CloudUpload",
         ...parsed
       });
     }
@@ -137,12 +138,19 @@ const Index = () => {
 
   const getUploadIcon = () => {
     switch (adminSettings.uploadIcon) {
+      case "CloudUpload":
+        return CloudUpload;
       case "Camera":
         return Camera;
       case "Image":
         return Image;
       case "FileImage":
         return FileImage;
+      case "FolderOpen":
+        return FolderOpen;
+      case "Plus":
+        return Plus;
+      case "Upload":
       default:
         return Upload;
     }

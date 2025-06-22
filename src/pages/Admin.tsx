@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Settings, Save, Eye, Upload, Camera, Image, FileImage } from "lucide-react";
+import { Settings, Save, Eye, Upload, Camera, Image, FileImage, CloudUpload, FolderOpen, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
@@ -20,9 +20,12 @@ interface AdminSettings {
 
 const iconOptions = [
   { value: "Upload", label: "Upload", icon: Upload },
+  { value: "CloudUpload", label: "Cloud Upload", icon: CloudUpload },
   { value: "Camera", label: "Camera", icon: Camera },
   { value: "Image", label: "Image", icon: Image },
   { value: "FileImage", label: "File Image", icon: FileImage },
+  { value: "FolderOpen", label: "Folder Open", icon: FolderOpen },
+  { value: "Plus", label: "Plus", icon: Plus },
 ];
 
 const Admin = () => {
@@ -32,7 +35,7 @@ const Admin = () => {
     pageTitle: "CloudShare",
     logoUrl: "",
     headerText: "Upload your photo securely with phone number verification",
-    uploadIcon: "Upload",
+    uploadIcon: "CloudUpload",
     iconColor: "#ffffff"
   });
   const [isSaving, setIsSaving] = useState(false);
@@ -46,6 +49,7 @@ const Admin = () => {
       // Add default iconColor if it doesn't exist in saved settings
       setSettings({
         iconColor: "#ffffff",
+        uploadIcon: "CloudUpload",
         ...parsed
       });
     }
@@ -87,7 +91,7 @@ const Admin = () => {
 
   const getSelectedIcon = () => {
     const selectedOption = iconOptions.find(option => option.value === settings.uploadIcon);
-    return selectedOption ? selectedOption.icon : Upload;
+    return selectedOption ? selectedOption.icon : CloudUpload;
   };
 
   const SelectedIcon = getSelectedIcon();
@@ -163,11 +167,11 @@ const Admin = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="uploadIcon" className="text-sm font-medium">
-                  Upload Icon
+                  Upload Icon Style
                 </Label>
                 <Select value={settings.uploadIcon} onValueChange={(value) => handleInputChange('uploadIcon', value)}>
                   <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Select upload icon" />
+                    <SelectValue placeholder="Select upload icon style" />
                   </SelectTrigger>
                   <SelectContent>
                     {iconOptions.map((option) => {
@@ -204,6 +208,7 @@ const Admin = () => {
                     className="h-12 flex-1"
                   />
                 </div>
+                <p className="text-xs text-gray-500">This color will be applied to the upload icon</p>
               </div>
 
               <div className="space-y-2">
