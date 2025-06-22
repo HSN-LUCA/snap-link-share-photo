@@ -1,18 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Upload, Shield, Download } from "lucide-react";
+import { Upload, Shield, Download, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadPhoto } from "@/lib/photoStorage";
+import { Link } from "react-router-dom";
+
+interface AdminSettings {
+  buttonColor: string;
+  buttonText: string;
+  pageTitle: string;
+}
 
 const Index = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
+  const [adminSettings, setAdminSettings] = useState<AdminSettings>({
+    buttonColor: "#92722A",
+    buttonText: "Upload Photo",
+    pageTitle: "CloudShare"
+  });
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Load admin settings from localStorage
+    const savedSettings = localStorage.getItem('adminSettings');
+    if (savedSettings) {
+      setAdminSettings(JSON.parse(savedSettings));
+    }
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -70,13 +90,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 relative">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            CloudShare
+            {adminSettings.pageTitle}
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Upload your photo securely with phone number verification
           </p>
+          
+          {/* Admin Panel Link */}
+          <Link 
+            to="/admin" 
+            className="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            title="Admin Panel"
+          >
+            <Settings className="w-6 h-6" />
+          </Link>
         </div>
 
         <div className="max-w-2xl mx-auto">
@@ -129,7 +158,7 @@ const Index = () => {
                   onClick={handleUpload} 
                   disabled={isUploading}
                   className="w-full h-12 text-white font-medium"
-                  style={{ backgroundColor: '#92722A' }}
+                  style={{ backgroundColor: adminSettings.buttonColor }}
                 >
                   {isUploading ? (
                     <div className="flex items-center space-x-2">
@@ -139,7 +168,7 @@ const Index = () => {
                   ) : (
                     <div className="flex items-center space-x-2">
                       <Upload className="w-4 h-4" />
-                      <span>Upload Photo</span>
+                      <span>{adminSettings.buttonText}</span>
                     </div>
                   )}
                 </Button>
