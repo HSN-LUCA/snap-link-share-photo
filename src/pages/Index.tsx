@@ -16,6 +16,7 @@ interface AdminSettings {
   logoUrl: string;
   headerText: string;
   uploadIcon: string;
+  iconColor: string;
 }
 
 const Index = () => {
@@ -30,7 +31,8 @@ const Index = () => {
     pageTitle: "CloudShare",
     logoUrl: "",
     headerText: "Upload your photo securely with phone number verification",
-    uploadIcon: "Upload"
+    uploadIcon: "Upload",
+    iconColor: "#ffffff"
   });
   const { toast } = useToast();
 
@@ -38,7 +40,12 @@ const Index = () => {
     // Load admin settings from localStorage
     const savedSettings = localStorage.getItem('adminSettings');
     if (savedSettings) {
-      setAdminSettings(JSON.parse(savedSettings));
+      const parsed = JSON.parse(savedSettings);
+      // Add default iconColor if it doesn't exist in saved settings
+      setAdminSettings({
+        iconColor: "#ffffff",
+        ...parsed
+      });
     }
   }, []);
 
@@ -174,7 +181,7 @@ const Index = () => {
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
-                  <UploadIcon className="w-8 h-8 text-white" />
+                  <UploadIcon className="w-8 h-8" style={{ color: adminSettings.iconColor }} />
                 </div>
                 <CardTitle className="text-2xl">Upload Your Photo</CardTitle>
                 <CardDescription className="text-base">
@@ -235,7 +242,7 @@ const Index = () => {
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <UploadIcon className="w-4 h-4" />
+                      <UploadIcon className="w-4 h-4" style={{ color: adminSettings.iconColor }} />
                       <span>{adminSettings.buttonText}</span>
                     </div>
                   )}
@@ -258,7 +265,7 @@ const Index = () => {
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
-                  <UploadIcon className="w-8 h-8 text-white" />
+                  <UploadIcon className="w-8 h-8" style={{ color: adminSettings.iconColor }} />
                 </div>
                 <CardTitle className="text-2xl text-green-600">Photo Uploaded Successfully!</CardTitle>
                 <CardDescription className="text-base">

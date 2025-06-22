@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +15,7 @@ interface AdminSettings {
   logoUrl: string;
   headerText: string;
   uploadIcon: string;
+  iconColor: string;
 }
 
 const iconOptions = [
@@ -32,7 +32,8 @@ const Admin = () => {
     pageTitle: "CloudShare",
     logoUrl: "",
     headerText: "Upload your photo securely with phone number verification",
-    uploadIcon: "Upload"
+    uploadIcon: "Upload",
+    iconColor: "#ffffff"
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -41,7 +42,12 @@ const Admin = () => {
     // Load settings from localStorage on component mount
     const savedSettings = localStorage.getItem('adminSettings');
     if (savedSettings) {
-      setSettings(JSON.parse(savedSettings));
+      const parsed = JSON.parse(savedSettings);
+      // Add default iconColor if it doesn't exist in saved settings
+      setSettings({
+        iconColor: "#ffffff",
+        ...parsed
+      });
     }
   }, []);
 
@@ -180,6 +186,27 @@ const Admin = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="iconColor" className="text-sm font-medium">
+                  Upload Icon Color
+                </Label>
+                <div className="flex space-x-2">
+                  <Input
+                    id="iconColor"
+                    type="color"
+                    value={settings.iconColor}
+                    onChange={(e) => handleInputChange('iconColor', e.target.value)}
+                    className="h-12 w-20"
+                  />
+                  <Input
+                    value={settings.iconColor}
+                    onChange={(e) => handleInputChange('iconColor', e.target.value)}
+                    placeholder="#ffffff"
+                    className="h-12 flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="buttonText" className="text-sm font-medium">
                   Button Text
                 </Label>
@@ -269,7 +296,7 @@ const Admin = () => {
                 
                 <div className="mb-6">
                   <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
-                    <SelectedIcon className="w-8 h-8 text-white" />
+                    <SelectedIcon className="w-8 h-8" style={{ color: settings.iconColor }} />
                   </div>
                 </div>
                 
@@ -286,6 +313,7 @@ const Admin = () => {
                 <p><strong>Title:</strong> {settings.pageTitle}</p>
                 <p><strong>Header Text:</strong> {settings.headerText}</p>
                 <p><strong>Upload Icon:</strong> {settings.uploadIcon}</p>
+                <p><strong>Icon Color:</strong> {settings.iconColor}</p>
                 <p><strong>Button Text:</strong> {settings.buttonText}</p>
                 <p><strong>Button Color:</strong> {settings.buttonColor}</p>
                 <p><strong>Logo:</strong> {settings.logoUrl ? 'Uploaded' : 'None'}</p>
