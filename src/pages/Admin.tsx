@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Settings, Save, Eye } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Settings, Save, Eye, Upload, Camera, Image, FileImage } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
@@ -12,13 +13,26 @@ interface AdminSettings {
   buttonColor: string;
   buttonText: string;
   pageTitle: string;
+  logoUrl: string;
+  headerText: string;
+  uploadIcon: string;
 }
+
+const iconOptions = [
+  { value: "Upload", label: "Upload", icon: Upload },
+  { value: "Camera", label: "Camera", icon: Camera },
+  { value: "Image", label: "Image", icon: Image },
+  { value: "FileImage", label: "File Image", icon: FileImage },
+];
 
 const Admin = () => {
   const [settings, setSettings] = useState<AdminSettings>({
     buttonColor: "#92722A",
     buttonText: "Upload Photo",
-    pageTitle: "CloudShare"
+    pageTitle: "CloudShare",
+    logoUrl: "",
+    headerText: "Upload your photo securely with phone number verification",
+    uploadIcon: "Upload"
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -52,6 +66,25 @@ const Admin = () => {
       [field]: value
     }));
   };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const logoUrl = e.target?.result as string;
+        handleInputChange('logoUrl', logoUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const getSelectedIcon = () => {
+    const selectedOption = iconOptions.find(option => option.value === settings.uploadIcon);
+    return selectedOption ? selectedOption.icon : Upload;
+  };
+
+  const SelectedIcon = getSelectedIcon();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -89,6 +122,61 @@ const Admin = () => {
                   placeholder="Enter page title"
                   className="h-12"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="headerText" className="text-sm font-medium">
+                  Header Description Text
+                </Label>
+                <Input
+                  id="headerText"
+                  value={settings.headerText}
+                  onChange={(e) => handleInputChange('headerText', e.target.value)}
+                  placeholder="Enter header description"
+                  className="h-12"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="logoUpload" className="text-sm font-medium">
+                  Logo Upload
+                </Label>
+                <Input
+                  id="logoUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="h-12 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {settings.logoUrl && (
+                  <div className="mt-2">
+                    <img src={settings.logoUrl} alt="Logo preview" className="h-12 w-auto object-contain" />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="uploadIcon" className="text-sm font-medium">
+                  Upload Icon
+                </Label>
+                <Select value={settings.uploadIcon} onValueChange={(value) => handleInputChange('uploadIcon', value)}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select upload icon" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {iconOptions.map((option) => {
+                      const IconComponent = option.icon;
+                      return (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className="flex items-center space-x-2">
+                            <IconComponent className="w-4 h-4" />
+                            <span>{option.label}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
@@ -167,12 +255,23 @@ const Admin = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center p-6 bg-gray-50 rounded-lg">
+                {settings.logoUrl && (
+                  <div className="mb-4">
+                    <img src={settings.logoUrl} alt="Logo" className="h-12 w-auto mx-auto object-contain" />
+                  </div>
+                )}
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
                   {settings.pageTitle}
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  Upload your photo securely with phone number verification
+                  {settings.headerText}
                 </p>
+                
+                <div className="mb-6">
+                  <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
+                    <SelectedIcon className="w-8 h-8 text-white" />
+                  </div>
+                </div>
                 
                 <Button 
                   className="h-12 text-white font-medium px-8"
@@ -183,10 +282,13 @@ const Admin = () => {
                 </Button>
               </div>
               
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-600 space-y-1">
                 <p><strong>Title:</strong> {settings.pageTitle}</p>
+                <p><strong>Header Text:</strong> {settings.headerText}</p>
+                <p><strong>Upload Icon:</strong> {settings.uploadIcon}</p>
                 <p><strong>Button Text:</strong> {settings.buttonText}</p>
                 <p><strong>Button Color:</strong> {settings.buttonColor}</p>
+                <p><strong>Logo:</strong> {settings.logoUrl ? 'Uploaded' : 'None'}</p>
               </div>
             </CardContent>
           </Card>

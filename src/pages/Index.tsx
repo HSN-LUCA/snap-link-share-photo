@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Upload, Shield, Download, Settings } from "lucide-react";
+import { Upload, Shield, Download, Settings, Camera, Image, FileImage } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadPhoto } from "@/lib/photoStorage";
 import { validateImageFile, detectFaces, loadImageFromFile } from "@/lib/faceDetection";
@@ -13,6 +13,9 @@ interface AdminSettings {
   buttonColor: string;
   buttonText: string;
   pageTitle: string;
+  logoUrl: string;
+  headerText: string;
+  uploadIcon: string;
 }
 
 const Index = () => {
@@ -24,7 +27,10 @@ const Index = () => {
   const [adminSettings, setAdminSettings] = useState<AdminSettings>({
     buttonColor: "#92722A",
     buttonText: "Upload Photo",
-    pageTitle: "CloudShare"
+    pageTitle: "CloudShare",
+    logoUrl: "",
+    headerText: "Upload your photo securely with phone number verification",
+    uploadIcon: "Upload"
   });
   const { toast } = useToast();
 
@@ -122,15 +128,35 @@ const Index = () => {
     setPhoneNumber("");
   };
 
+  const getUploadIcon = () => {
+    switch (adminSettings.uploadIcon) {
+      case "Camera":
+        return Camera;
+      case "Image":
+        return Image;
+      case "FileImage":
+        return FileImage;
+      default:
+        return Upload;
+    }
+  };
+
+  const UploadIcon = getUploadIcon();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12 relative">
+          {adminSettings.logoUrl && (
+            <div className="mb-4">
+              <img src={adminSettings.logoUrl} alt="Logo" className="h-16 w-auto mx-auto object-contain" />
+            </div>
+          )}
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
             {adminSettings.pageTitle}
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Upload your photo securely with phone number verification
+            {adminSettings.headerText}
           </p>
           
           {/* Admin Panel Link */}
@@ -148,7 +174,7 @@ const Index = () => {
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
-                  <Upload className="w-8 h-8 text-white" />
+                  <UploadIcon className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-2xl">Upload Your Photo</CardTitle>
                 <CardDescription className="text-base">
@@ -209,7 +235,7 @@ const Index = () => {
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <Upload className="w-4 h-4" />
+                      <UploadIcon className="w-4 h-4" />
                       <span>{adminSettings.buttonText}</span>
                     </div>
                   )}
@@ -232,7 +258,7 @@ const Index = () => {
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
-                  <Upload className="w-8 h-8 text-white" />
+                  <UploadIcon className="w-8 h-8 text-white" />
                 </div>
                 <CardTitle className="text-2xl text-green-600">Photo Uploaded Successfully!</CardTitle>
                 <CardDescription className="text-base">
