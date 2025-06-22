@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, Shield, Download, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadPhoto } from "@/lib/photoStorage";
+import { validateImageFile, detectFaces, loadImageFromFile } from "@/lib/faceDetection";
 import { Link } from "react-router-dom";
 
 interface AdminSettings {
@@ -18,6 +19,7 @@ const Index = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const [adminSettings, setAdminSettings] = useState<AdminSettings>({
     buttonColor: "#92722A",
@@ -34,19 +36,52 @@ const Index = () => {
     }
   }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      // Check if file is an image
-      if (!file.type.startsWith('image/')) {
+    if (!file) return;
+
+    // Basic file validation
+    const fileValidation = validateImageFile(file);
+    if (!fileValidation.isValid) {
+      toast({
+        title: "Invalid File",
+        description: fileValidation.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsValidating(true);
+    
+    try {
+      // Load image and perform face detection
+      const imageElement = await loadImageFromFile(file);
+      const faceValidation = await detectFaces(imageElement);
+      
+      if (!faceValidation.isValid) {
         toast({
-          title: "Invalid File Type",
-          description: "Please select an image file",
+          title: "Photo Validation Failed",
+          description: faceValidation.error,
           variant: "destructive",
         });
+        setIsValidating(false);
         return;
       }
+
+      // If validation passes, set the file
       setSelectedFile(file);
+      toast({
+        title: "Photo Validated",
+        description: "Face detected successfully! Photo is ready for upload.",
+      });
+    } catch (error) {
+      toast({
+        title: "Validation Error",
+        description: "Failed to validate photo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -54,7 +89,7 @@ const Index = () => {
     if (!selectedFile || !phoneNumber) {
       toast({
         title: "Missing Information",
-        description: "Please select a photo and provide phone number",
+        description: "Please select a validated photo and provide phone number",
         variant: "destructive",
       });
       return;
@@ -117,26 +152,33 @@ const Index = () => {
                 </div>
                 <CardTitle className="text-2xl">Upload Your Photo</CardTitle>
                 <CardDescription className="text-base">
-                  Upload your photo and associate it with your phone number
+                  Upload a clear photo with your face visible (JPEG/PNG only)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="photo" className="text-sm font-medium">
-                    Select Photo
+                    Select Photo (JPEG/PNG with human face)
                   </Label>
                   <div className="relative">
                     <Input
                       id="photo"
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png"
                       onChange={handleFileChange}
                       className="h-12 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      disabled={isValidating}
                     />
                   </div>
-                  {selectedFile && (
+                  {isValidating && (
+                    <div className="flex items-center space-x-2 text-sm text-blue-600 mt-2">
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Validating photo and detecting face...</span>
+                    </div>
+                  )}
+                  {selectedFile && !isValidating && (
                     <p className="text-sm text-green-600 mt-2">
-                      Selected: {selectedFile.name}
+                      ✓ {selectedFile.name} - Face detected and validated
                     </p>
                   )}
                 </div>
@@ -156,7 +198,7 @@ const Index = () => {
 
                 <Button 
                   onClick={handleUpload} 
-                  disabled={isUploading}
+                  disabled={isUploading || isValidating || !selectedFile}
                   className="w-full h-12 text-white font-medium"
                   style={{ backgroundColor: adminSettings.buttonColor }}
                 >
@@ -172,6 +214,18 @@ const Index = () => {
                     </div>
                   )}
                 </Button>
+
+                {/* Validation Info */}
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <h4 className="font-medium text-blue-800 mb-2">Photo Requirements:</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Only JPEG and PNG formats accepted</li>
+                    <li>• Must contain at least one clear human face</li>
+                    <li>• Maximum 3 people in the photo</li>
+                    <li>• File size must be under 10MB</li>
+                    <li>• Face must be clearly visible and not too small</li>
+                  </ul>
+                </div>
               </CardContent>
             </Card>
           ) : (
