@@ -17,6 +17,7 @@ interface AdminSettings {
   headerText: string;
   uploadIcon: string;
   iconColor: string;
+  iconBackgroundColor: string;
 }
 
 const Index = () => {
@@ -32,7 +33,8 @@ const Index = () => {
     logoUrl: "",
     headerText: "Upload your photo securely with phone number verification",
     uploadIcon: "CloudUpload",
-    iconColor: "#ffffff"
+    iconColor: "#ffffff",
+    iconBackgroundColor: "#ffffff"
   });
   const { toast } = useToast();
 
@@ -41,10 +43,11 @@ const Index = () => {
     const savedSettings = localStorage.getItem('adminSettings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
-      // Add default iconColor if it doesn't exist in saved settings
+      // Add default values if they don't exist in saved settings
       setAdminSettings({
         iconColor: "#ffffff",
         uploadIcon: "CloudUpload",
+        iconBackgroundColor: "#ffffff",
         ...parsed
       });
     }
@@ -188,7 +191,10 @@ const Index = () => {
           {!isUploaded ? (
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
+                <div 
+                  className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                  style={{ backgroundColor: adminSettings.iconBackgroundColor }}
+                >
                   <UploadIcon className="w-8 h-8" style={{ color: adminSettings.iconColor }} />
                 </div>
                 <CardTitle className="text-2xl">Upload Your Photo</CardTitle>
@@ -272,7 +278,10 @@ const Index = () => {
           ) : (
             <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
               <CardHeader className="text-center">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
+                <div 
+                  className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                  style={{ backgroundColor: adminSettings.iconBackgroundColor }}
+                >
                   <UploadIcon className="w-8 h-8" style={{ color: adminSettings.iconColor }} />
                 </div>
                 <CardTitle className="text-2xl text-green-600">Photo Uploaded Successfully!</CardTitle>
@@ -301,32 +310,6 @@ const Index = () => {
               </CardContent>
             </Card>
           )}
-
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Upload className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="font-semibold mb-2">Easy Upload</h3>
-              <p className="text-sm text-gray-600">Simply select your photo and enter your phone number</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Shield className="w-6 h-6 text-green-600" />
-              </div>
-              <h3 className="font-semibold mb-2">Secure Storage</h3>
-              <p className="text-sm text-gray-600">Your photos are linked to your phone number for security</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Download className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="font-semibold mb-2">Find & Download</h3>
-              <p className="text-sm text-gray-600">Enter your phone number to find and download your photos</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

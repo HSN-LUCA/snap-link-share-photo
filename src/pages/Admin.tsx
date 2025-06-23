@@ -16,6 +16,7 @@ interface AdminSettings {
   headerText: string;
   uploadIcon: string;
   iconColor: string;
+  iconBackgroundColor: string;
 }
 
 const iconOptions = [
@@ -36,7 +37,8 @@ const Admin = () => {
     logoUrl: "",
     headerText: "Upload your photo securely with phone number verification",
     uploadIcon: "CloudUpload",
-    iconColor: "#ffffff"
+    iconColor: "#ffffff",
+    iconBackgroundColor: "#ffffff"
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -46,10 +48,11 @@ const Admin = () => {
     const savedSettings = localStorage.getItem('adminSettings');
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
-      // Add default iconColor if it doesn't exist in saved settings
+      // Add default values if they don't exist in saved settings
       setSettings({
         iconColor: "#ffffff",
         uploadIcon: "CloudUpload",
+        iconBackgroundColor: "#ffffff",
         ...parsed
       });
     }
@@ -212,6 +215,28 @@ const Admin = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="iconBackgroundColor" className="text-sm font-medium">
+                  Upload Icon Background Color
+                </Label>
+                <div className="flex space-x-2">
+                  <Input
+                    id="iconBackgroundColor"
+                    type="color"
+                    value={settings.iconBackgroundColor}
+                    onChange={(e) => handleInputChange('iconBackgroundColor', e.target.value)}
+                    className="h-12 w-20"
+                  />
+                  <Input
+                    value={settings.iconBackgroundColor}
+                    onChange={(e) => handleInputChange('iconBackgroundColor', e.target.value)}
+                    placeholder="#ffffff"
+                    className="h-12 flex-1"
+                  />
+                </div>
+                <p className="text-xs text-gray-500">Background color for the icon circle</p>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="buttonText" className="text-sm font-medium">
                   Button Text
                 </Label>
@@ -300,7 +325,10 @@ const Admin = () => {
                 </p>
                 
                 <div className="mb-6">
-                  <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
+                  <div 
+                    className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                    style={{ backgroundColor: settings.iconBackgroundColor }}
+                  >
                     <SelectedIcon className="w-8 h-8" style={{ color: settings.iconColor }} />
                   </div>
                 </div>
@@ -319,6 +347,7 @@ const Admin = () => {
                 <p><strong>Header Text:</strong> {settings.headerText}</p>
                 <p><strong>Upload Icon:</strong> {settings.uploadIcon}</p>
                 <p><strong>Icon Color:</strong> {settings.iconColor}</p>
+                <p><strong>Icon Background:</strong> {settings.iconBackgroundColor}</p>
                 <p><strong>Button Text:</strong> {settings.buttonText}</p>
                 <p><strong>Button Color:</strong> {settings.buttonColor}</p>
                 <p><strong>Logo:</strong> {settings.logoUrl ? 'Uploaded' : 'None'}</p>
