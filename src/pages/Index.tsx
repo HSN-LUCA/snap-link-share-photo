@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Upload, Shield, Download, Settings, Camera, Image, FileImage, CloudUpload, FolderOpen, Plus } from "lucide-react";
+import { Upload, Camera, Image, FileImage, CloudUpload, FolderOpen, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadPhoto } from "@/lib/photoStorage";
 import { validateImageFile, detectFaces, loadImageFromFile } from "@/lib/faceDetection";
@@ -202,7 +202,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="text-center mb-8 sm:mb-12 relative">
+        <div className="text-center mb-8 sm:mb-12">
           {adminSettings.logoUrl && (
             <div className="mb-3 sm:mb-4">
               <img src={adminSettings.logoUrl} alt="Logo" className="h-12 sm:h-16 w-auto mx-auto object-contain" />
@@ -214,15 +214,6 @@ const Index = () => {
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto px-4">
             {adminSettings.headerText}
           </p>
-          
-          {/* Admin Panel Link */}
-          <Link 
-            to="/admin" 
-            className="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            title="Admin Panel"
-          >
-            <Settings className="w-5 h-5 sm:w-6 sm:h-6" />
-          </Link>
         </div>
 
         <div className="max-w-2xl mx-auto px-2 sm:px-0">
