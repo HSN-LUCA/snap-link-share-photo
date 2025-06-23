@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,11 +103,49 @@ const Index = () => {
     }
   };
 
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    
+    // Remove all non-digits
+    value = value.replace(/\D/g, '');
+    
+    // Ensure it starts with 05
+    if (value.length > 0 && !value.startsWith('05')) {
+      if (value.startsWith('5')) {
+        value = '0' + value;
+      } else if (!value.startsWith('0')) {
+        value = '05' + value;
+      } else if (value.startsWith('0') && value.length > 1 && value[1] !== '5') {
+        value = '05' + value.substring(1);
+      }
+    }
+    
+    // Limit to 10 digits total (05 + 8 digits)
+    if (value.length > 10) {
+      value = value.substring(0, 10);
+    }
+    
+    setPhoneNumber(value);
+  };
+
+  const isValidPhoneNumber = (phone: string) => {
+    return phone.startsWith('05') && phone.length === 10;
+  };
+
   const handleUpload = async () => {
     if (!selectedFile || !phoneNumber) {
       toast({
         title: "Missing Information",
         description: "Please select a validated photo and provide phone number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isValidPhoneNumber(phoneNumber)) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Phone number must be 05 followed by 8 digits",
         variant: "destructive",
       });
       return;
@@ -199,13 +238,13 @@ const Index = () => {
                 </div>
                 <CardTitle className="text-2xl">Upload Your Photo</CardTitle>
                 <CardDescription className="text-base">
-                  Upload a clear photo with your face visible (JPEG/PNG only)
+                  Select your photo
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="photo" className="text-sm font-medium">
-                    Select Photo (JPEG/PNG with human face)
+                    Select Photo
                   </Label>
                   <div className="relative">
                     <Input
@@ -236,16 +275,22 @@ const Index = () => {
                   </Label>
                   <Input
                     id="phoneNumber"
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="05xxxxxxxx"
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    onChange={handlePhoneNumberChange}
                     className="h-12"
+                    maxLength={10}
                   />
+                  {phoneNumber && !isValidPhoneNumber(phoneNumber) && (
+                    <p className="text-sm text-red-600">
+                      Phone number must be 05 followed by 8 digits
+                    </p>
+                  )}
                 </div>
 
                 <Button 
                   onClick={handleUpload} 
-                  disabled={isUploading || isValidating || !selectedFile}
+                  disabled={isUploading || isValidating || !selectedFile || !isValidPhoneNumber(phoneNumber)}
                   className="w-full h-12 text-white font-medium"
                   style={{ backgroundColor: adminSettings.buttonColor }}
                 >
@@ -261,18 +306,6 @@ const Index = () => {
                     </div>
                   )}
                 </Button>
-
-                {/* Validation Info */}
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="font-medium text-blue-800 mb-2">Photo Requirements:</h4>
-                  <ul className="text-sm text-blue-700 space-y-1">
-                    <li>• Only JPEG and PNG formats accepted</li>
-                    <li>• Must contain at least one clear human face</li>
-                    <li>• Maximum 3 people in the photo</li>
-                    <li>• File size must be under 10MB</li>
-                    <li>• Face must be clearly visible and not too small</li>
-                  </ul>
-                </div>
               </CardContent>
             </Card>
           ) : (
