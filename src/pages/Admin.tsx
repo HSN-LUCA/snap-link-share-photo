@@ -101,29 +101,29 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 sm:mb-4 px-2">
             Admin Panel
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 text-base sm:text-lg px-4">
             Control your application's appearance and content
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 px-2 sm:px-0">
           {/* Settings Panel */}
           <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
-            <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mb-4">
-                <Settings className="w-8 h-8 text-white" />
+            <CardHeader className="text-center px-4 sm:px-6">
+              <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                <Settings className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <CardTitle className="text-2xl">Customize Settings</CardTitle>
-              <CardDescription className="text-base">
+              <CardTitle className="text-xl sm:text-2xl">Customize Settings</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
                 Modify the appearance and content of your main page
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
               <div className="space-y-2">
                 <Label htmlFor="pageTitle" className="text-sm font-medium">
                   Page Title
@@ -133,7 +133,7 @@ const Admin = () => {
                   value={settings.pageTitle}
                   onChange={(e) => handleInputChange('pageTitle', e.target.value)}
                   placeholder="Enter page title"
-                  className="h-12"
+                  className="h-10 sm:h-12 text-sm sm:text-base"
                 />
               </div>
 
@@ -146,7 +146,7 @@ const Admin = () => {
                   value={settings.headerText}
                   onChange={(e) => handleInputChange('headerText', e.target.value)}
                   placeholder="Enter header description"
-                  className="h-12"
+                  className="h-10 sm:h-12 text-sm sm:text-base"
                 />
               </div>
 
@@ -159,11 +159,11 @@ const Admin = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleLogoUpload}
-                  className="h-12 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="h-10 sm:h-12 text-xs sm:text-sm file:mr-2 sm:file:mr-4 file:py-1 sm:file:py-2 file:px-2 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
                 {settings.logoUrl && (
                   <div className="mt-2">
-                    <img src={settings.logoUrl} alt="Logo preview" className="h-12 w-auto object-contain" />
+                    <img src={settings.logoUrl} alt="Logo preview" className="h-8 sm:h-12 w-auto object-contain" />
                   </div>
                 )}
               </div>
@@ -173,7 +173,7 @@ const Admin = () => {
                   Upload Icon Style
                 </Label>
                 <Select value={settings.uploadIcon} onValueChange={(value) => handleInputChange('uploadIcon', value)}>
-                  <SelectTrigger className="h-12">
+                  <SelectTrigger className="h-10 sm:h-12">
                     <SelectValue placeholder="Select upload icon style" />
                   </SelectTrigger>
                   <SelectContent>
@@ -182,8 +182,8 @@ const Admin = () => {
                       return (
                         <SelectItem key={option.value} value={option.value}>
                           <div className="flex items-center space-x-2">
-                            <IconComponent className="w-4 h-4" />
-                            <span>{option.label}</span>
+                            <IconComponent className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm">{option.label}</span>
                           </div>
                         </SelectItem>
                       );
@@ -202,13 +202,13 @@ const Admin = () => {
                     type="color"
                     value={settings.iconColor}
                     onChange={(e) => handleInputChange('iconColor', e.target.value)}
-                    className="h-12 w-20"
+                    className="h-10 sm:h-12 w-16 sm:w-20"
                   />
                   <Input
                     value={settings.iconColor}
                     onChange={(e) => handleInputChange('iconColor', e.target.value)}
                     placeholder="#ffffff"
-                    className="h-12 flex-1"
+                    className="h-10 sm:h-12 flex-1 text-sm sm:text-base"
                   />
                 </div>
                 <p className="text-xs text-gray-500">This color will be applied to the upload icon</p>
@@ -224,13 +224,13 @@ const Admin = () => {
                     type="color"
                     value={settings.iconBackgroundColor}
                     onChange={(e) => handleInputChange('iconBackgroundColor', e.target.value)}
-                    className="h-12 w-20"
+                    className="h-10 sm:h-12 w-16 sm:w-20"
                   />
                   <Input
                     value={settings.iconBackgroundColor}
                     onChange={(e) => handleInputChange('iconBackgroundColor', e.target.value)}
                     placeholder="#ffffff"
-                    className="h-12 flex-1"
+                    className="h-10 sm:h-12 flex-1 text-sm sm:text-base"
                   />
                 </div>
                 <p className="text-xs text-gray-500">Background color for the icon circle</p>
@@ -245,7 +245,7 @@ const Admin = () => {
                   value={settings.buttonText}
                   onChange={(e) => handleInputChange('buttonText', e.target.value)}
                   placeholder="Enter button text"
-                  className="h-12"
+                  className="h-10 sm:h-12 text-sm sm:text-base"
                 />
               </div>
 
@@ -259,13 +259,13 @@ const Admin = () => {
                     type="color"
                     value={settings.buttonColor}
                     onChange={(e) => handleInputChange('buttonColor', e.target.value)}
-                    className="h-12 w-20"
+                    className="h-10 sm:h-12 w-16 sm:w-20"
                   />
                   <Input
                     value={settings.buttonColor}
                     onChange={(e) => handleInputChange('buttonColor', e.target.value)}
                     placeholder="#92722A"
-                    className="h-12 flex-1"
+                    className="h-10 sm:h-12 flex-1 text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -273,17 +273,17 @@ const Admin = () => {
               <Button 
                 onClick={handleSave} 
                 disabled={isSaving}
-                className="w-full h-12 text-white font-medium"
+                className="w-full h-10 sm:h-12 text-white font-medium text-sm sm:text-base"
                 style={{ backgroundColor: settings.buttonColor }}
               >
                 {isSaving ? (
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     <span>Saving...</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <Save className="w-4 h-4" />
+                    <Save className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Save Settings</span>
                   </div>
                 )}
@@ -292,10 +292,10 @@ const Admin = () => {
               <Button 
                 asChild
                 variant="outline"
-                className="w-full h-12"
+                className="w-full h-10 sm:h-12 text-sm sm:text-base"
               >
                 <Link to="/">
-                  <Eye className="w-4 h-4 mr-2" />
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                   View Main Page
                 </Link>
               </Button>
@@ -304,37 +304,37 @@ const Admin = () => {
 
           {/* Preview Panel */}
           <Card className="backdrop-blur-sm bg-white/90 shadow-xl border-0">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Live Preview</CardTitle>
-              <CardDescription className="text-base">
+            <CardHeader className="text-center px-4 sm:px-6">
+              <CardTitle className="text-xl sm:text-2xl">Live Preview</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
                 See how your changes will look
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-center p-6 bg-gray-50 rounded-lg">
+            <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+              <div className="text-center p-4 sm:p-6 bg-gray-50 rounded-lg">
                 {settings.logoUrl && (
-                  <div className="mb-4">
-                    <img src={settings.logoUrl} alt="Logo" className="h-12 w-auto mx-auto object-contain" />
+                  <div className="mb-3 sm:mb-4">
+                    <img src={settings.logoUrl} alt="Logo" className="h-8 sm:h-12 w-auto mx-auto object-contain" />
                   </div>
                 )}
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 sm:mb-4">
                   {settings.pageTitle}
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
                   {settings.headerText}
                 </p>
                 
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   <div 
-                    className="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                    className="mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-3 sm:mb-4"
                     style={{ backgroundColor: settings.iconBackgroundColor }}
                   >
-                    <SelectedIcon className="w-8 h-8" style={{ color: settings.iconColor }} />
+                    <SelectedIcon className="w-6 h-6 sm:w-8 sm:h-8" style={{ color: settings.iconColor }} />
                   </div>
                 </div>
                 
                 <Button 
-                  className="h-12 text-white font-medium px-8"
+                  className="h-10 sm:h-12 text-white font-medium px-6 sm:px-8 text-sm sm:text-base"
                   style={{ backgroundColor: settings.buttonColor }}
                   disabled
                 >
@@ -342,13 +342,13 @@ const Admin = () => {
                 </Button>
               </div>
               
-              <div className="text-sm text-gray-600 space-y-1">
-                <p><strong>Title:</strong> {settings.pageTitle}</p>
-                <p><strong>Header Text:</strong> {settings.headerText}</p>
+              <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+                <p><strong>Title:</strong> <span className="break-words">{settings.pageTitle}</span></p>
+                <p><strong>Header Text:</strong> <span className="break-words">{settings.headerText}</span></p>
                 <p><strong>Upload Icon:</strong> {settings.uploadIcon}</p>
                 <p><strong>Icon Color:</strong> {settings.iconColor}</p>
                 <p><strong>Icon Background:</strong> {settings.iconBackgroundColor}</p>
-                <p><strong>Button Text:</strong> {settings.buttonText}</p>
+                <p><strong>Button Text:</strong> <span className="break-words">{settings.buttonText}</span></p>
                 <p><strong>Button Color:</strong> {settings.buttonColor}</p>
                 <p><strong>Logo:</strong> {settings.logoUrl ? 'Uploaded' : 'None'}</p>
               </div>
